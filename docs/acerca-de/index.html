@@ -7,9 +7,9 @@
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/inicio.css?v=6">
+    <link rel="stylesheet" href="../css/inicio.css?v=7">
 </head>
-<body>
+<body data-page="acerca">
     <nav class="navbar">
         <div class="nav-container">
             <a href="../" class="nav-logo">
@@ -17,13 +17,13 @@
             </a>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="../" class="nav-link">Inicio</a>
+                    <a href="../" class="nav-link" data-nav="inicio">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a href="./" class="nav-link active">Acerca de</a>
+                    <a href="./" class="nav-link active" data-nav="acerca">Acerca de</a>
                 </li>
                 <li class="nav-item">
-                    <a href="../servicios/" class="nav-link">Servicios</a>
+                    <a href="../servicios/" class="nav-link" data-nav="servicios">Servicios</a>
                 </li>
             </ul>
             <a href="../#contacto" class="nav-cta">Presupuesto Gratis</a>
@@ -35,6 +35,7 @@
         </div>
     </nav>
 
+    <main id="page-transition" class="page-transition">
     <section class="about-hero-section">
         <div class="about-hero-overlay"></div>
         <div class="about-hero-content">
@@ -130,7 +131,8 @@
             </div>
         </div>
     </section>
+    </main>
 
-    <script src="../js/inicio.js"></script>
+    <script src="../js/inicio.js?v=7"></script>
 </body>
 </html>

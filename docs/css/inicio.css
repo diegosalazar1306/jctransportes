@@ -841,3 +841,74 @@ body {
         font-size: 1.05rem;
     }
 }
+
+/* Transiciones entre páginas (SPA ligera) */
+body.is-page-transitioning {
+    overflow-x: hidden;
+}
+
+.page-transition {
+    position: relative;
+    will-change: transform, opacity;
+}
+
+@keyframes pt-exit-forward {
+    to {
+        transform: translateX(-100%);
+        opacity: 0.65;
+    }
+}
+
+@keyframes pt-enter-forward {
+    from {
+        transform: translateX(100%);
+        opacity: 0.65;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pt-exit-back {
+    to {
+        transform: translateX(100%);
+        opacity: 0.65;
+    }
+}
+
+@keyframes pt-enter-back {
+    from {
+        transform: translateX(-100%);
+        opacity: 0.65;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.page-transition.pt-exit-forward {
+    animation: pt-exit-forward 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.page-transition.pt-enter-forward {
+    animation: pt-enter-forward 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.page-transition.pt-exit-back {
+    animation: pt-exit-back 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.page-transition.pt-enter-back {
+    animation: pt-enter-back 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-transition.pt-exit-forward,
+    .page-transition.pt-enter-forward,
+    .page-transition.pt-exit-back,
+    .page-transition.pt-enter-back {
+        animation: none !important;
+    }
+}

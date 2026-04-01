@@ -10,9 +10,9 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=6">
+    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=7">
 </head>
-<body>
+<body data-page="servicios">
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -21,13 +21,13 @@
             </a>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="{{ route('inicio') }}" class="nav-link {{ request()->routeIs('inicio') ? 'active' : '' }}">Inicio</a>
+                    <a href="{{ route('inicio') }}" class="nav-link {{ request()->routeIs('inicio') ? 'active' : '' }}" data-nav="inicio">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('acerca-de') }}" class="nav-link {{ request()->routeIs('acerca-de') ? 'active' : '' }}">Acerca de</a>
+                    <a href="{{ route('acerca-de') }}" class="nav-link {{ request()->routeIs('acerca-de') ? 'active' : '' }}" data-nav="acerca">Acerca de</a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('servicios') }}" class="nav-link {{ request()->routeIs('servicios') ? 'active' : '' }}">Servicios</a>
+                    <a href="{{ route('servicios') }}" class="nav-link {{ request()->routeIs('servicios') ? 'active' : '' }}" data-nav="servicios">Servicios</a>
                 </li>
             </ul>
             <a href="{{ route('inicio') }}#contacto" class="nav-cta">Presupuesto Gratis</a>
@@ -39,6 +39,7 @@
         </div>
     </nav>
 
+    <main id="page-transition" class="page-transition">
     <!-- Services Section -->
     <section class="content-section" style="padding-top: 8rem;">
         <h2 class="section-title">Nuestros Servicios</h2>
@@ -141,9 +142,10 @@
             </div>
         </div>
     </section>
+    </main>
     
     <!-- Scripts -->
-    <script src="{{ asset('js/inicio.js') }}"></script>
+    <script src="{{ asset('js/inicio.js') }}?v=7"></script>
 </body>
 </html>
 

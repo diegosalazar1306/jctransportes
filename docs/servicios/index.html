@@ -7,9 +7,9 @@
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/inicio.css?v=6">
+    <link rel="stylesheet" href="../css/inicio.css?v=7">
 </head>
-<body>
+<body data-page="servicios">
     <nav class="navbar">
         <div class="nav-container">
             <a href="../" class="nav-logo">
@@ -17,13 +17,13 @@
             </a>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="../" class="nav-link">Inicio</a>
+                    <a href="../" class="nav-link" data-nav="inicio">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a href="../acerca-de/" class="nav-link">Acerca de</a>
+                    <a href="../acerca-de/" class="nav-link" data-nav="acerca">Acerca de</a>
                 </li>
                 <li class="nav-item">
-                    <a href="./" class="nav-link active">Servicios</a>
+                    <a href="./" class="nav-link active" data-nav="servicios">Servicios</a>
                 </li>
             </ul>
             <a href="../#contacto" class="nav-cta">Presupuesto Gratis</a>
@@ -35,6 +35,7 @@
         </div>
     </nav>
 
+    <main id="page-transition" class="page-transition">
     <section class="content-section" style="padding-top: 8rem;">
         <h2 class="section-title">Nuestros Servicios</h2>
         <div class="services-grid">
@@ -127,7 +128,8 @@
             </div>
         </div>
     </section>
+    </main>
 
-    <script src="../js/inicio.js"></script>
+    <script src="../js/inicio.js?v=7"></script>
 </body>
 </html>
