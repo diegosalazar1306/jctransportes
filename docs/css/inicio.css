@@ -585,15 +585,16 @@ body {
     max-width: 100%;
 }
 
-/* Pantallas grandes: columna del título más ancha para que "TRANSPORTES" no se parta */
+/* Escritorio: primera columna tan ancha como el bloque de título (TRANSPORTES en una línea) */
 @media (min-width: 769px) {
     .about-hero-content {
-        grid-template-columns: minmax(460px, 1.1fr) 1.9fr;
+        grid-template-columns: max-content minmax(0, 1fr);
         gap: clamp(2rem, 3vw, 4rem);
+        align-items: center;
     }
 
     .about-hero-text {
-        min-width: 0;
+        min-width: min-content;
     }
 
     .about-hero-subtitle {
