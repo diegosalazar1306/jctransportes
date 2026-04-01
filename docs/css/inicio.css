@@ -528,6 +528,8 @@ body {
     align-items: center;
     padding: 8rem 2rem 5rem;
     margin-top: 80px;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .about-hero-overlay {
@@ -546,6 +548,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    min-width: 0;
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 4rem;
@@ -554,6 +557,7 @@ body {
 
 .about-hero-text {
     color: #ffffff;
+    min-width: 0;
 }
 
 .about-hero-title {
@@ -563,16 +567,21 @@ body {
     text-transform: uppercase;
     letter-spacing: 2px;
     color: #ffffff;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .about-hero-subtitle {
     font-size: 5rem;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.05;
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 3px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .about-hero-description {
@@ -580,6 +589,9 @@ body {
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .about-hero-description p {
@@ -735,24 +747,27 @@ body {
 
     .about-hero-section {
         min-height: auto;
-        padding: 6rem 1.5rem 3rem;
+        padding: 6rem max(1rem, 4vw) 2.5rem;
+        background-position: center top;
     }
 
     .about-hero-content {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 
     .about-hero-title {
-        font-size: 2rem;
+        font-size: clamp(1.35rem, 5vw, 2rem);
+        letter-spacing: 1px;
     }
 
     .about-hero-subtitle {
-        font-size: 3rem;
+        font-size: clamp(2rem, 12vw, 3rem);
+        letter-spacing: 1px;
     }
 
     .about-hero-description {
-        padding: 2rem;
+        padding: 1.5rem 1.25rem;
     }
 
     .about-hero-description p {
@@ -765,5 +780,24 @@ body {
 
     .certification-card {
         padding: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-hero-section {
+        padding: 5.5rem max(0.75rem, 3vw) 2rem;
+    }
+
+    .about-hero-title {
+        font-size: 1.25rem;
+    }
+
+    .about-hero-subtitle {
+        font-size: clamp(1.65rem, 11vw, 2.25rem);
+        letter-spacing: 0.5px;
+    }
+
+    .about-hero-description {
+        padding: 1.25rem 1rem;
     }
 }
