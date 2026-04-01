@@ -5,11 +5,73 @@ function getPageId() {
 }
 
 function pageIdFromPath(pathname) {
-    const segments = pathname.split('/').filter(Boolean);
+    let p = pathname.replace(/\/index\.html?$/i, '').replace(/\/$/, '');
+    const segments = p.split('/').filter(Boolean);
     const last = segments[segments.length - 1] || '';
     if (last === 'servicios') return 'servicios';
     if (last === 'acerca-de') return 'acerca';
     return 'inicio';
+}
+
+function pathsEquivalent(a, b) {
+    return normalizePathname(a) === normalizePathname(b);
+}
+
+function normalizePathname(pathname) {
+    let p = pathname.replace(/\/index\.html?$/i, '') || '/';
+    if (p !== '/' && !p.endsWith('/')) {
+        if (/\/acerca-de$/i.test(p) || /\/servicios$/i.test(p)) {
+            p += '/';
+        } else if (pageIdFromPath(`${p}/`) === 'inicio') {
+            const parts = p.split('/').filter(Boolean);
+            if (parts.length === 1) p += '/';
+        }
+    }
+    return p;
+}
+
+/** Raíz del sitio (sin /acerca-de ni /servicios) para href absolutos a partir del pathname */
+function getSiteRootPath() {
+    let p = window.location.pathname.replace(/\/index\.html?$/i, '');
+    if (/\/acerca-de\/?$/i.test(p)) {
+        p = p.replace(/\/acerca-de\/?$/i, '');
+    } else if (/\/servicios\/?$/i.test(p)) {
+        p = p.replace(/\/servicios\/?$/i, '');
+    }
+    if (!p || p === '/') return '/';
+    return p.endsWith('/') ? p : `${p}/`;
+}
+
+function hrefForPage(pageId) {
+    const root = getSiteRootPath();
+    if (pageId === 'inicio') {
+        return root === '/' ? '/' : root;
+    }
+    const base = root === '/' ? '' : root.replace(/\/$/, '');
+    if (pageId === 'acerca') {
+        return base === '' ? '/acerca-de/' : `${base}/acerca-de/`;
+    }
+    return base === '' ? '/servicios/' : `${base}/servicios/`;
+}
+
+/** Tras cada navegación SPA el <nav> sigue en el DOM: hay que refrescar href para que no dependan de la carpeta actual */
+function updateNavbarHrefs() {
+    document.querySelectorAll('.nav-link[data-nav]').forEach((a) => {
+        const id = a.dataset.nav;
+        if (id === 'inicio') a.setAttribute('href', hrefForPage('inicio'));
+        else if (id === 'acerca') a.setAttribute('href', hrefForPage('acerca'));
+        else if (id === 'servicios') a.setAttribute('href', hrefForPage('servicios'));
+    });
+
+    const logo = document.querySelector('.nav-logo');
+    if (logo) logo.setAttribute('href', hrefForPage('inicio'));
+
+    const cta = document.querySelector('.nav-cta');
+    if (cta) {
+        const inicio = hrefForPage('inicio');
+        const path = inicio === '/' ? '/#contacto' : `${inicio.replace(/\/?$/, '')}/#contacto`;
+        cta.setAttribute('href', path);
+    }
 }
 
 function updateNavActive(pageId) {
@@ -55,11 +117,11 @@ function setupScrollAnimations() {
     });
 }
 
-function waitAnimationEnd(el) {
+function waitAnimationEnd(el, ms = 620) {
     return new Promise((resolve) => {
-        const ms = prefersReducedMotion() ? 0 : 450;
+        const fallback = prefersReducedMotion() ? 0 : ms;
         const done = () => resolve();
-        const t = setTimeout(done, ms);
+        const t = setTimeout(done, fallback);
         if (prefersReducedMotion()) return;
         el.addEventListener(
             'animationend',
@@ -70,6 +132,17 @@ function waitAnimationEnd(el) {
             { once: true }
         );
     });
+}
+
+function normalizeFetchPath(pathname, search) {
+    let path = pathname;
+    if (/\/acerca-de$/i.test(path) && !path.endsWith('/')) path += '/';
+    if (/\/servicios$/i.test(path) && !path.endsWith('/')) path += '/';
+    if (path !== '/' && !path.endsWith('/') && pageIdFromPath(path) === 'inicio') {
+        const segs = path.split('/').filter(Boolean);
+        if (segs.length === 1) path += '/';
+    }
+    return path + (search || '');
 }
 
 let isNavigating = false;
@@ -91,10 +164,10 @@ async function navigateToUrl(urlString, { isPopState = false } = {}) {
 
     const destPageId = pageIdFromPath(url.pathname);
     const fromPageId = getPageId();
-    const samePath =
-        url.pathname === window.location.pathname && url.search === window.location.search;
+    const pathSame = pathsEquivalent(url.pathname, window.location.pathname);
+    const searchSame = url.search === window.location.search;
 
-    if (samePath && url.hash) {
+    if (pathSame && searchSame && url.hash) {
         if (destPageId === fromPageId) {
             const target = document.querySelector(url.hash);
             if (target) {
@@ -108,7 +181,7 @@ async function navigateToUrl(urlString, { isPopState = false } = {}) {
         }
     }
 
-    if (samePath && !url.hash && destPageId === fromPageId) {
+    if (pathSame && searchSame && !url.hash && destPageId === fromPageId) {
         return;
     }
 
@@ -119,69 +192,94 @@ async function navigateToUrl(urlString, { isPopState = false } = {}) {
     }
 
     isNavigating = true;
+    document.documentElement.classList.add('is-page-transitioning');
     document.body.classList.add('is-page-transitioning');
 
     const forward = PAGE_ORDER[destPageId] > PAGE_ORDER[fromPageId];
+    const fetchPath = normalizeFetchPath(url.pathname, url.search);
 
-    if (!prefersReducedMotion()) {
-        main.classList.remove('pt-exit-forward', 'pt-exit-back', 'pt-enter-forward', 'pt-enter-back');
-        main.classList.add(forward ? 'pt-exit-forward' : 'pt-exit-back');
-        await waitAnimationEnd(main);
-    }
+    main.classList.remove('pt-exit-forward', 'pt-exit-back', 'pt-enter-forward', 'pt-enter-back');
+    const exitClass = forward ? 'pt-exit-forward' : 'pt-exit-back';
 
-    try {
-        const res = await fetch(url.pathname + url.search, {
+    const fetchPromise = (async () => {
+        const res = await fetch(fetchPath, {
             credentials: 'same-origin',
             redirect: 'follow',
+            headers: { Accept: 'text/html' },
         });
         if (!res.ok) throw new Error('fetch failed');
+        return res.text();
+    })();
 
-        const html = await res.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const newMain = doc.getElementById('page-transition');
-        if (!newMain) {
-            window.location.href = urlString;
-            return;
-        }
+    let exitPromise = Promise.resolve();
+    if (!prefersReducedMotion()) {
+        main.classList.add(exitClass);
+        exitPromise = waitAnimationEnd(main, 620);
+    }
 
-        if (!isPopState) {
-            history.pushState({ page: destPageId }, '', url.pathname + url.search + url.hash);
-        }
-
-        document.body.dataset.page = destPageId;
-        if (doc.title) document.title = doc.title;
-
-        main.innerHTML = newMain.innerHTML;
-        main.classList.remove('pt-exit-forward', 'pt-exit-back');
-
-        if (!prefersReducedMotion()) {
-            main.classList.add(forward ? 'pt-enter-forward' : 'pt-enter-back');
-        }
-
-        updateNavActive(destPageId);
-        setupScrollAnimations();
-        window.scrollTo(0, 0);
-
-        if (!prefersReducedMotion()) {
-            await waitAnimationEnd(main);
-            main.classList.remove('pt-enter-forward', 'pt-enter-back');
-        }
-
-        if (url.hash) {
-            requestAnimationFrame(() => {
-                document.querySelector(url.hash)?.scrollIntoView({
-                    behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-                    block: 'start',
-                });
-            });
-        }
+    let html;
+    try {
+        [html] = await Promise.all([fetchPromise, exitPromise]);
     } catch {
-        window.location.href = urlString;
-    } finally {
+        main.classList.remove('pt-exit-forward', 'pt-exit-back', 'pt-enter-forward', 'pt-enter-back');
+        document.documentElement.classList.remove('is-page-transitioning');
         document.body.classList.remove('is-page-transitioning');
         isNavigating = false;
-        closeNavMenu();
+        window.location.href = url.href;
+        return;
     }
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const newMain = doc.getElementById('page-transition');
+    if (!newMain) {
+        main.classList.remove('pt-exit-forward', 'pt-exit-back', 'pt-enter-forward', 'pt-enter-back');
+        document.documentElement.classList.remove('is-page-transitioning');
+        document.body.classList.remove('is-page-transitioning');
+        isNavigating = false;
+        window.location.href = url.href;
+        return;
+    }
+
+    const urlForBar = normalizeFetchPath(url.pathname, url.search) + (url.hash || '');
+
+    if (!isPopState) {
+        history.pushState({ page: destPageId }, '', urlForBar);
+    }
+
+    document.body.dataset.page = destPageId;
+    if (doc.title) document.title = doc.title;
+
+    main.innerHTML = newMain.innerHTML;
+    main.classList.remove('pt-exit-forward', 'pt-exit-back');
+
+    if (!prefersReducedMotion()) {
+        void main.offsetWidth;
+        main.classList.add(forward ? 'pt-enter-forward' : 'pt-enter-back');
+    }
+
+    updateNavActive(destPageId);
+    updateNavbarHrefs();
+    setupScrollAnimations();
+    window.scrollTo(0, 0);
+
+    if (!prefersReducedMotion()) {
+        await waitAnimationEnd(main, 620);
+        main.classList.remove('pt-enter-forward', 'pt-enter-back');
+    }
+
+    if (url.hash) {
+        requestAnimationFrame(() => {
+            document.querySelector(url.hash)?.scrollIntoView({
+                behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+                block: 'start',
+            });
+        });
+    }
+
+    document.documentElement.classList.remove('is-page-transitioning');
+    document.body.classList.remove('is-page-transitioning');
+    isNavigating = false;
+    closeNavMenu();
 }
 
 document.addEventListener('click', (e) => {
@@ -201,12 +299,14 @@ document.addEventListener('click', (e) => {
 
     if (url.origin !== window.location.origin) return;
 
+    if (a.target && a.target !== '_self') return;
+
     const destPageId = pageIdFromPath(url.pathname);
     const fromPageId = getPageId();
-    const samePath =
-        url.pathname === window.location.pathname && url.search === window.location.search;
+    const pathSame = pathsEquivalent(url.pathname, window.location.pathname);
+    const searchSame = url.search === window.location.search;
 
-    if (samePath && url.hash) {
+    if (pathSame && searchSame && url.hash) {
         if (destPageId === fromPageId) {
             e.preventDefault();
             const target = document.querySelector(url.hash);
@@ -221,7 +321,7 @@ document.addEventListener('click', (e) => {
         }
     }
 
-    if (samePath && !url.hash && destPageId === fromPageId) {
+    if (pathSame && searchSame && !url.hash && destPageId === fromPageId) {
         e.preventDefault();
         return;
     }
@@ -247,3 +347,4 @@ document.addEventListener('click', (e) => {
 });
 
 setupScrollAnimations();
+updateNavbarHrefs();

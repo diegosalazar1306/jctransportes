@@ -843,65 +843,76 @@ body {
 }
 
 /* Transiciones entre páginas (SPA ligera) */
+html.is-page-transitioning,
 body.is-page-transitioning {
     overflow-x: hidden;
+    overscroll-behavior-x: none;
 }
 
 .page-transition {
     position: relative;
-    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 @keyframes pt-exit-forward {
+    from {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
     to {
-        transform: translateX(-100%);
-        opacity: 0.65;
+        transform: translate3d(calc(-1 * clamp(2.5rem, 18vw, 6.5rem)), 0, 0);
+        opacity: 0.93;
     }
 }
 
 @keyframes pt-enter-forward {
     from {
-        transform: translateX(100%);
-        opacity: 0.65;
+        transform: translate3d(clamp(2.5rem, 18vw, 6.5rem), 0, 0);
+        opacity: 0.93;
     }
     to {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
         opacity: 1;
     }
 }
 
 @keyframes pt-exit-back {
+    from {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
     to {
-        transform: translateX(100%);
-        opacity: 0.65;
+        transform: translate3d(clamp(2.5rem, 18vw, 6.5rem), 0, 0);
+        opacity: 0.93;
     }
 }
 
 @keyframes pt-enter-back {
     from {
-        transform: translateX(-100%);
-        opacity: 0.65;
+        transform: translate3d(calc(-1 * clamp(2.5rem, 18vw, 6.5rem)), 0, 0);
+        opacity: 0.93;
     }
     to {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
         opacity: 1;
     }
 }
 
 .page-transition.pt-exit-forward {
-    animation: pt-exit-forward 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: pt-exit-forward 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .page-transition.pt-enter-forward {
-    animation: pt-enter-forward 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: pt-enter-forward 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .page-transition.pt-exit-back {
-    animation: pt-exit-back 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: pt-exit-back 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .page-transition.pt-enter-back {
-    animation: pt-enter-back 0.38s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: pt-enter-back 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

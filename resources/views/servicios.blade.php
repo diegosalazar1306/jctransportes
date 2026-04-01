@@ -10,7 +10,7 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=8">
 </head>
 <body data-page="servicios">
     <!-- Navigation Bar -->
@@ -145,7 +145,7 @@
     </main>
     
     <!-- Scripts -->
-    <script src="{{ asset('js/inicio.js') }}?v=7"></script>
+    <script src="{{ asset('js/inicio.js') }}?v=8"></script>
 </body>
 </html>
 
