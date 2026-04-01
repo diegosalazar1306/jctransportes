@@ -10,7 +10,7 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=4">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -45,7 +45,7 @@
         <div class="about-hero-content">
             <div class="about-hero-text">
                 <h1 class="about-hero-title">Acerca de</h1>
-                <h2 class="about-hero-subtitle">TRANSPORTES<br>JC</h2>
+                <h2 class="about-hero-subtitle">TRANSPORT<wbr>ES<br>JC</h2>
             </div>
             <div class="about-hero-description">
                 <p>
