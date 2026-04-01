@@ -10,7 +10,7 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}?v=5">
 </head>
 <body>
     <!-- Navigation Bar -->

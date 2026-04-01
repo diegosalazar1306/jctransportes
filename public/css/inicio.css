@@ -572,17 +572,34 @@ body {
 }
 
 .about-hero-subtitle {
-    font-size: 5rem;
+    font-size: clamp(2.75rem, 4vw + 1.5rem, 5rem);
     font-weight: 800;
     line-height: 1.05;
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 3px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    overflow-wrap: anywhere;
-    word-wrap: break-word;
-    hyphens: manual;
+    overflow-wrap: normal;
+    word-break: normal;
+    word-wrap: normal;
     max-width: 100%;
+}
+
+/* Pantallas grandes: columna del título más ancha para que "TRANSPORTES" no se parta */
+@media (min-width: 769px) {
+    .about-hero-content {
+        grid-template-columns: minmax(460px, 1.1fr) 1.9fr;
+        gap: clamp(2rem, 3vw, 4rem);
+    }
+
+    .about-hero-text {
+        min-width: 0;
+    }
+
+    .about-hero-subtitle {
+        overflow-wrap: normal;
+        word-break: normal;
+    }
 }
 
 .about-hero-description {
@@ -773,6 +790,8 @@ body {
         font-size: clamp(1.05rem, 5.5vw, 1.85rem);
         letter-spacing: 0;
         line-height: 1.12;
+        overflow-wrap: anywhere;
+        word-break: normal;
     }
 
     .about-hero-description {
